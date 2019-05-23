@@ -15,12 +15,12 @@ namespace GildedRose.Migrations
             AutomaticMigrationsEnabled = false;
 		}
 
-		protected override void Seed(GildedRose.Models.ApplicationDbContext context)
+		protected override void Seed(ApplicationDbContext context)
         {
 			if (!context.Users.Any(u => u.UserName == "test@domain.com"))
 			{
 				var store = new UserStore<ApplicationUser>(context);
-				var manager = new UserManager<ApplicationUser>(store);
+				var manager = new ApplicationUserManager(store);
 				var user = new ApplicationUser { UserName = "test@domain.com" };
 
 				manager.Create(user, "Test1234!");

@@ -9,16 +9,18 @@ namespace GildedRose
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API configuration and services
+			config.SuppressHostPrincipal();
 
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+			// Web API configuration and services
 
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+			// Web API routes
+			config.MapHttpAttributeRoutes();
+
+            //config.Routes.MapHttpRoute(
+            //    name: "DefaultApi",
+            //    routeTemplate: "api/{controller}/{id}",
+            //    defaults: new { id = RouteParameter.Optional }
+            //);
         }
     }
 }
