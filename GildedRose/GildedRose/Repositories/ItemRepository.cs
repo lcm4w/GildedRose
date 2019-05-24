@@ -9,14 +9,14 @@ namespace GildedRose.Repositories
 {
 	public class ItemRepository : IItemRepository
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly IApplicationDbContext _context;
 
-		public ItemRepository(ApplicationDbContext context)
+		public ItemRepository(IApplicationDbContext context)
 		{
 			_context = context;
 		}
 
-		public IEnumerable<ItemDto> GetItemsInStock()
+		public ICollection<ItemDto> GetItemsInStock()
 		{
 			return _context.Items
 							.Where(i => i.Quantity > 0)

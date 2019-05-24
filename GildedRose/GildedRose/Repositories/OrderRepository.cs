@@ -10,21 +10,21 @@ namespace GildedRose.Repositories
 {
 	public class OrderRepository : IOrderRepository
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly IApplicationDbContext _context;
 
-		public OrderRepository(ApplicationDbContext context)
+		public OrderRepository(IApplicationDbContext context)
 		{
 			_context = context;
 		}
 
-		public async Task<OrderDto> GetOrderAsync(int orderId, string customerId)
+		public OrderDto GetOrder(int orderId, string customerId)
 		{
-			return await _context.Orders
+			return _context.Orders
 							.Where(o => o.Id == orderId && o.CustomerId == customerId)
 							.Include(o => o.Customer)
 							.Include(o => o.OrderItems.Select(oi => oi.Item))
 							.ProjectTo<OrderDto>()
-							.SingleOrDefaultAsync();
+							.SingleOrDefault();
 		}
 
 		public void Add(Order order)

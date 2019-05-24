@@ -7,6 +7,6 @@ namespace GildedRose.Repositories
 	public interface IOrderRepository
 	{
 		void Add(Order order);
-		Task<OrderDto> GetOrderAsync(int orderId, string customerId);
+		OrderDto GetOrder(int orderId, string customerId);
 	}
 }

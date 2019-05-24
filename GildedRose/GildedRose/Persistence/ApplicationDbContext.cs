@@ -4,8 +4,8 @@ using System.Data.Entity;
 
 namespace GildedRose.Persistence
 {
-	public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
+	public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
+	{
 		public DbSet<Item> Items { get; set; }
 		public DbSet<Order> Orders { get; set; }
 		public DbSet<OrderItem> OrderItems { get; set; }

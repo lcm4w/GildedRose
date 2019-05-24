@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using GildedRose.Persistence;
+using System.Data.Entity.Infrastructure;
 
 namespace GildedRose.Controllers
 {
@@ -25,12 +26,12 @@ namespace GildedRose.Controllers
 
 		// GET orders/1
 		[HttpGet, Route("{id}", Name = "GetOrder")]
-		public async Task<IHttpActionResult> Get(int id)
+		public IHttpActionResult Get(int id)
 		{
-			var orderDto = await _unitOfWork.Orders.GetOrderAsync(id, User.Identity.GetUserId());
+			var orderDto = _unitOfWork.Orders.GetOrder(id, User.Identity.GetUserId());
 
 			if (orderDto == null)
-				return Content(HttpStatusCode.NotFound, "Order does not exist.");
+				return NotFound();
 
 			return Ok(orderDto);
 		}
@@ -46,13 +47,24 @@ namespace GildedRose.Controllers
 				OrderDate = DateTime.Now
 			};
 
+			if (orders.OrderItems.Count !=
+					orders.OrderItems
+						.Select(oi => oi.ItemId)
+						.Distinct()
+						.Count()
+				)
+				return BadRequest("Items should be sunique.");
+
 			var orderItems = new Collection<OrderItem>();
 
 			foreach (var orderItemDto in orders.OrderItems)
 			{
 				var item = _unitOfWork.Items.GetItemById(orderItemDto.ItemId);
 				if (item == null)
-					return Content(HttpStatusCode.NotFound, "Item does not exist.");
+					return NotFound();
+
+				if (item.Quantity < orderItemDto.Quantity)
+					return BadRequest($"Not enough stock for '{item.Name}.'");
 
 				var orderItem = new OrderItem
 				{
@@ -64,6 +76,8 @@ namespace GildedRose.Controllers
 				};
 
 				orderItems.Add(orderItem);
+
+				item.Quantity -= orderItemDto.Quantity;
 			}
 
 			order.OrderItems = orderItems;
@@ -75,7 +89,7 @@ namespace GildedRose.Controllers
 
 			return CreatedAtRoute("GetOrder",
 				new { order.Id },
-				await _unitOfWork.Orders.GetOrderAsync(order.Id, User.Identity.GetUserId())
+				_unitOfWork.Orders.GetOrder(order.Id, User.Identity.GetUserId())
 				);
 		}
 	}

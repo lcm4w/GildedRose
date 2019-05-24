@@ -7,6 +7,6 @@ namespace GildedRose.Repositories
 	public interface IItemRepository
 	{
 		Item GetItemById(int id);
-		IEnumerable<ItemDto> GetItemsInStock();
+		ICollection<ItemDto> GetItemsInStock();
 	}
 }
