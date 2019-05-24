@@ -1,21 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Linq;
 using System.Web.Http;
-using GildedRose.AuthFilters;
+using AutoMapper.QueryableExtensions;
+using GildedRose.ActionFilters;
+using GildedRose.Dtos;
+using GildedRose.Models;
 
 namespace GildedRose.Controllers
 {
 	[RoutePrefix("items")]
 	public class ItemsController : ApiController
 	{
-		// GET items
-		[HttpGet, Route("")]
-		public IEnumerable<string> Get()
+		private ApplicationDbContext _context { get; set; }
+
+		public ItemsController()
 		{
-			return new string[] { User.Identity.Name, User.Identity.AuthenticationType };
+			_context = new ApplicationDbContext();
+		}
+
+		// GET items
+		[AcceptHeaderJson]
+		[HttpGet, Route("")]
+		public IHttpActionResult Get()
+		{
+			var items = _context.Items
+				.Where(i => i.Quantity > 0)
+				.ProjectTo<ItemDto>()
+				.ToList();
+
+			return Ok(items);
 		}
 	}
 }

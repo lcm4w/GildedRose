@@ -20,7 +20,7 @@ namespace GildedRose.AuthFilters
 	/// </summary>
 	public class BasicAuthFilterAttribute : Attribute, IAuthenticationFilter
 	{
-		public ApplicationDbContext _context { get; set; }
+		private ApplicationDbContext _context { get; set; }
 
 		/// <summary>
 		/// Set to the Authorization header Scheme value that this filter is intended to support.
@@ -97,13 +97,12 @@ namespace GildedRose.AuthFilters
 			if (!await manager.CheckPasswordAsync(user, subject.Item2))
 				return null;
 
-			IList<Claim> claimCollection = new List<Claim>
-			{
+			var identity = await manager.CreateIdentityAsync(user, SupportedTokenScheme);
+			identity.AddClaims(new List<Claim> {
 				new Claim(ClaimTypes.Name, subject.Item1),
-				new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("o")),
-			};
+				new Claim(ClaimTypes.AuthenticationInstant, DateTime.UtcNow.ToString("o"))
+			});
 
-			var identity = new ClaimsIdentity(claimCollection, SupportedTokenScheme);
 			var principal = new ClaimsPrincipal(identity);
 
 			return await Task.FromResult(principal);

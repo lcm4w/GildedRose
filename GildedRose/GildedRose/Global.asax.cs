@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AutoMapper;
+using GildedRose.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,7 +13,9 @@ namespace GildedRose
     {
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+			Mapper.Initialize(cfg => cfg.AddProfile<AutoMapperProfile>());
+
+			GlobalConfiguration.Configure(WebApiConfig.Register);
         }
     }
 }
