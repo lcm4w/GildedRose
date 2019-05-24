@@ -17,6 +17,11 @@ namespace GildedRose.Persistence
 			Orders = new OrderRepository(context);
 		}
 
+		public void Complete()
+		{
+			_context.SaveChanges();
+		}
+
 		public async Task CompleteAsync()
 		{
 			await _context.SaveChangesAsync();

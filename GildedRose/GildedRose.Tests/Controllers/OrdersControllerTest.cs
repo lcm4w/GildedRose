@@ -50,7 +50,7 @@ namespace GildedRose.Tests.Controllers
 		}
 
 		[TestMethod]
-		public async Task Post_MultipleSameItem_ShouldReturnBadRequest()
+		public void Post_MultipleSameItem_ShouldReturnBadRequest()
 		{
 			var dto = new OrderPostDto
 			{
@@ -69,13 +69,13 @@ namespace GildedRose.Tests.Controllers
 				}
 			};
 
-			var result = await _controller.Post(dto);
+			var result = _controller.Post(dto);
 
 			result.Should().BeOfType<BadRequestErrorMessageResult>();
 		}
 
 		[TestMethod]
-		public async Task Post_NoItemWithGivenIdExists_ShouldReturnNotFound()
+		public void Post_NoItemWithGivenIdExists_ShouldReturnNotFound()
 		{
 			var dto = new OrderPostDto
 			{
@@ -89,13 +89,13 @@ namespace GildedRose.Tests.Controllers
 				}
 			};
 
-			var result = await _controller.Post(dto);
+			var result = _controller.Post(dto);
 
 			result.Should().BeOfType<NotFoundResult>();
 		}
 
 		[TestMethod]
-		public async Task Post_NotEnoughStock_ShouldReturnBadRequest()
+		public void Post_NotEnoughStock_ShouldReturnBadRequest()
 		{
 			var dto = new OrderPostDto
 			{
@@ -109,13 +109,13 @@ namespace GildedRose.Tests.Controllers
 				}
 			};
 
-			var result = await _controller.Post(dto);
+			var result = _controller.Post(dto);
 
 			result.Should().BeOfType<BadRequestErrorMessageResult>();
 		}
 
 		[TestMethod]
-		public async Task Post_ValidRequest_ShouldReturnCreated()
+		public void Post_ValidRequest_ShouldReturnCreated()
 		{
 			var dto = new OrderPostDto
 			{
@@ -129,7 +129,7 @@ namespace GildedRose.Tests.Controllers
 				}
 			};
 
-			var result = await _controller.Post(dto);
+			var result = _controller.Post(dto);
 
 			result.Should().BeOfType<CreatedAtRouteNegotiatedContentResult<OrderDto>>();
 		}

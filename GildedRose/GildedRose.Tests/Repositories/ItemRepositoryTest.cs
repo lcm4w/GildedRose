@@ -61,7 +61,7 @@ namespace GildedRose.Tests.Repositories
 		}
 
 		[TestMethod]
-		public void GetItemsInStock_ValidRequest_ShouldBeEquivalent()
+		public void GetItemsInStock_WhenCalled_ShouldBeEquivalent()
 		{
 			var items = _repository.GetItemsInStock();
 

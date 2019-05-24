@@ -51,7 +51,7 @@ namespace GildedRose.Tests.Controllers
 		}
 
 		[TestMethod]
-		public void Get_ValidRequest_ShouldReturnOk()
+		public void Get_WhenCalled_ShouldReturnOk()
 		{
 			var result = _controller.Get();
 

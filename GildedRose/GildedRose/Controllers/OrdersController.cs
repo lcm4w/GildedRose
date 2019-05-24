@@ -39,7 +39,7 @@ namespace GildedRose.Controllers
 		// POST orders
 		[ValidateOrders(BodyRequired = true)]
 		[HttpPost, Route("")]
-		public async Task<IHttpActionResult> Post([FromBody]OrderPostDto orders)
+		public IHttpActionResult Post([FromBody]OrderPostDto orders)
 		{
 			var order = new Order
 			{
@@ -53,7 +53,7 @@ namespace GildedRose.Controllers
 						.Distinct()
 						.Count()
 				)
-				return BadRequest("Items should be sunique.");
+				return BadRequest("Items should be unique.");
 
 			var orderItems = new Collection<OrderItem>();
 
@@ -85,7 +85,7 @@ namespace GildedRose.Controllers
 
 			_unitOfWork.Orders.Add(order);
 
-			await _unitOfWork.CompleteAsync();
+			_unitOfWork.Complete();
 
 			return CreatedAtRoute("GetOrder",
 				new { order.Id },

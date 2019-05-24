@@ -6,7 +6,10 @@ namespace GildedRose.Persistence
 	public interface IUnitOfWork
 	{
 		IItemRepository Items { get; }
+
 		IOrderRepository Orders { get; }
+
+		void Complete();
 
 		Task CompleteAsync();
 	}
