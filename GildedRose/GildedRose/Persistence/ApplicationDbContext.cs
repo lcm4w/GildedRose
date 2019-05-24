@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using GildedRose.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
 
-namespace GildedRose.Models
+namespace GildedRose.Persistence
 {
 	public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {

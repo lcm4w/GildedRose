@@ -1,20 +1,17 @@
-﻿using System.Linq;
-using System.Web.Http;
-using AutoMapper.QueryableExtensions;
+﻿using System.Web.Http;
 using GildedRose.ActionFilters;
-using GildedRose.Dtos;
-using GildedRose.Models;
+using GildedRose.Persistence;
 
 namespace GildedRose.Controllers
 {
 	[RoutePrefix("items")]
 	public class ItemsController : ApiController
 	{
-		private ApplicationDbContext _context { get; set; }
+		private readonly IUnitOfWork _unitOfWork;
 
-		public ItemsController()
+		public ItemsController(IUnitOfWork unitOfWork)
 		{
-			_context = new ApplicationDbContext();
+			_unitOfWork = unitOfWork;
 		}
 
 		// GET items
@@ -22,12 +19,7 @@ namespace GildedRose.Controllers
 		[HttpGet, Route("")]
 		public IHttpActionResult Get()
 		{
-			var items = _context.Items
-				.Where(i => i.Quantity > 0)
-				.ProjectTo<ItemDto>()
-				.ToList();
-
-			return Ok(items);
+			return Ok(_unitOfWork.Items.GetItemsInStock());
 		}
 	}
 }

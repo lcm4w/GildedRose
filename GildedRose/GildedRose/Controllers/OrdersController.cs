@@ -1,51 +1,41 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Web.Http;
-using AutoMapper.QueryableExtensions;
 using GildedRose.ActionFilters;
 using GildedRose.AuthFilters;
 using GildedRose.Models;
 using Microsoft.AspNet.Identity;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http.Results;
 using System.Net;
-using GildedRose.Dtos;
-using System.Data.Entity;
+using GildedRose.Persistence;
 
 namespace GildedRose.Controllers
 {
+	[BasicAuthFilter]
 	[RoutePrefix("orders")]
 	public class OrdersController : ApiController
 	{
-		private ApplicationDbContext _context { get; set; }
+		private readonly IUnitOfWork _unitOfWork;
 
-		public OrdersController()
+		public OrdersController(IUnitOfWork unitOfWork)
 		{
-			_context = new ApplicationDbContext();
+			_unitOfWork = unitOfWork;
 		}
 
-		[BasicAuthFilter]
+		// GET orders/1
 		[HttpGet, Route("{id}", Name = "GetOrder")]
-		public IHttpActionResult Get(int id)
+		public async Task<IHttpActionResult> Get(int id)
 		{
-			var orderDto = _context.Orders
-				.Where(o => o.Id == id)
-				.Include(o => o.Customer)
-				.Include(o => o.OrderItems.Select(oi => oi.Item))
-				.ProjectTo<OrderDto>()
-				.ToList();
+			var orderDto = await _unitOfWork.Orders.GetOrderAsync(id, User.Identity.GetUserId());
 
 			if (orderDto == null)
-			{
 				return Content(HttpStatusCode.NotFound, "Order does not exist.");
-			}
 
 			return Ok(orderDto);
 		}
-		
+
 		// POST orders
-		[BasicAuthFilter]
 		[ValidateOrders(BodyRequired = true)]
 		[HttpPost, Route("")]
 		public async Task<IHttpActionResult> Post([FromBody]OrderPostDto orders)
@@ -55,13 +45,14 @@ namespace GildedRose.Controllers
 				CustomerId = User.Identity.GetUserId(),
 				OrderDate = DateTime.Now
 			};
-			_context.Orders.Add(order);
 
 			var orderItems = new Collection<OrderItem>();
 
 			foreach (var orderItemDto in orders.OrderItems)
 			{
-				var item = _context.Items.SingleOrDefault(i => i.Id == orderItemDto.ItemId);
+				var item = _unitOfWork.Items.GetItemById(orderItemDto.ItemId);
+				if (item == null)
+					return Content(HttpStatusCode.NotFound, "Item does not exist.");
 
 				var orderItem = new OrderItem
 				{
@@ -73,22 +64,19 @@ namespace GildedRose.Controllers
 				};
 
 				orderItems.Add(orderItem);
-				_context.OrderItems.Add(orderItem);
 			}
 
 			order.OrderItems = orderItems;
 			order.TotalPrice = orderItems.Sum(oi => oi.LinePrice);
 
-			await _context.SaveChangesAsync();
+			_unitOfWork.Orders.Add(order);
 
-			var orderDto = _context.Orders
-				.Where(o => o.Id == order.Id)
-				.Include(o => o.Customer)
-				.Include(o => o.OrderItems.Select(oi => oi.Item))
-				.ProjectTo<OrderDto>()
-				.ToList();
+			await _unitOfWork.CompleteAsync();
 
-			return CreatedAtRoute("GetOrder", new { order.Id }, orderDto);
+			return CreatedAtRoute("GetOrder",
+				new { order.Id },
+				await _unitOfWork.Orders.GetOrderAsync(order.Id, User.Identity.GetUserId())
+				);
 		}
 	}
 }

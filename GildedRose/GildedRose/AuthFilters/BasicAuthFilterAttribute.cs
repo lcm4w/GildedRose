@@ -1,10 +1,8 @@
 ﻿using GildedRose.Models;
-using Microsoft.AspNet.Identity;
+using GildedRose.Persistence;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Principal;
