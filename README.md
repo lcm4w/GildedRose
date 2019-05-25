@@ -125,6 +125,16 @@ Response:
 Request:
 /orders POST
 authorization: Basic dGVzdEBkb21haW4uY29tOlRlc3QxMjM0IQ==
+{
+	"orderItems": [{
+		"itemId": 1,
+		"quantity": 8
+	},
+	{
+		"itemId": 4,
+		"quantity": 1
+	}]
+}
 
 Response:
 {
