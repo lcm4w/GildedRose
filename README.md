@@ -204,3 +204,16 @@ The framework was designed for good reasons. For more understanding of this opin
 
 ![alt text](https://image.isu.pub/170128084338-783b569f2e63a265832757636129a032/jpg/page_1.jpg "ASP.NET Web API 2: HTTP Message Lifecycle")
 
+
+### Questions and Answers
+- Q: How do we know if a user is authenticated?
+
+  A: The system uses basic authentication. The user puts its Base64-encoded encoded credentials to the request payload. The system then decodes the username and password and should match DB values.
+- Q: Is it always possible to buy an item?
+
+  A: No. User can buy only if all the following conditions are met:
+  - the user is authenticated
+  - all Items exist
+  - all OrderItem Quantities are greater than zero
+  - OrderItem Quantity is less than or equal to the Item Quantity (stock)
+  - no duplicate Items
